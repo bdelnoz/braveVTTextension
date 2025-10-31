@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whisper Local STT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 350px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .status.connected {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .status.error {
+            background: rgba(244, 67, 54, 0.3);
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            color: #667eea;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        button.recording {
+            background: #f44336;
+            color: white;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .language-select {
+            margin-top: 15px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .info {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .recording-indicator {
+            display: none;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .recording-indicator.active {
+            display: block;
+        }
+        
+        .dot {
+            height: 12px;
+            width: 12px;
+            background-color: #f44336;
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 1s ease-in-out infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎤 Whisper Local STT</h1>
+    
+    <div id="status" class="status">
+        Vérification de la connexion...
+    </div>
+    
+    <div class="controls">
+        <button id="testBtn">Test connexion</button>
+        <button id="recordBtn" disabled>Démarrer l'enregistrement</button>
+    </div>
+    
+    <div id="recordingIndicator" class="recording-indicator">
+        <span class="dot"></span>
+        <span style="margin-left: 8px;">Enregistrement en cours...</span>
+    </div>
+    
+    <div class="language-select">
+        <label for="language">Langue :</label>
+        <select id="language">
+            <option value="auto">Auto-détection</option>
+            <option value="fr">Français</option>
+            <option value="en">Anglais</option>
+            <option value="es">Espagnol</option>
+            <option value="de">Allemand</option>
+            <option value="it">Italien</option>
+            <option value="pt">Portugais</option>
+            <option value="nl">Néerlandais</option>
+            <option value="ar">Arabe</option>
+        </select>
+    </div>
+    
+    <div class="info">
+        🔒 100% local - Aucune donnée envoyée en ligne
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>

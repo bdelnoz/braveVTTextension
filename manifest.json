@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Whisper Local STT - Brave",
+  "version": "1.0",
+  "description": "Transcription vocale 100% locale avec whisper.cpp - Aucune donnée envoyée en ligne",
+  
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  
+  "host_permissions": [
+    "http://localhost:8080/*",
+    "http://127.0.0.1:8080/*"
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon48.png",
+      "96": "icon96.png"
+    }
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "icons": {
+    "48": "icon48.png",
+    "96": "icon96.png"
+  }
+}
