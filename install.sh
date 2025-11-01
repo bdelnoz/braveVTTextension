@@ -7,11 +7,15 @@
 # Path complet      : /mnt/data2_78g/Security/scripts/Projects_web/braveVTTextension/install.sh
 # Target usage      : Installation et configuration de l'extension Whisper Local STT
 #                     Génère les fichiers JS avec les paramètres personnalisés
-# Version           : 1.0.0
+# Version           : 1.1.0
 # Date              : 2025-10-31
 #
 # CHANGELOG:
 # ----------
+# v1.1.0 - 2025-10-31
+#   - Ajout option --whisper-path pour spécifier le chemin de whisper.cpp
+#   - Path par défaut gardé si non spécifié
+# 
 # v1.0.0 - 2025-10-31
 #   - Création du script d'installation
 #   - Support --delay pour configurer le délai d'auto-stop
@@ -41,6 +45,9 @@ DEFAULT_AUTO_ENTER=true
 # Langue par défaut (auto-détection)
 DEFAULT_LANGUAGE="auto"
 
+# Chemin whisper.cpp par défaut
+DEFAULT_WHISPER_PATH="/mnt/data2_78g/Security/scripts/AI_Projects/DeepEcho_whisper/whisper.cpp"
+
 # Répertoire de travail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -49,6 +56,7 @@ SILENCE_DURATION=$DEFAULT_SILENCE_DURATION
 SILENCE_THRESHOLD=$DEFAULT_SILENCE_THRESHOLD
 AUTO_ENTER=$DEFAULT_AUTO_ENTER
 DEFAULT_LANG=$DEFAULT_LANGUAGE
+WHISPER_PATH=$DEFAULT_WHISPER_PATH
 SIMULATE=false
 EXEC_MODE=false
 
@@ -70,7 +78,7 @@ NC='\033[0m' # No Color
 show_help() {
     cat << EOF
 ${CYAN}╔══════════════════════════════════════════════════════════════════════════╗
-║           Whisper Local STT - Script d'installation v1.0.0              ║
+║           Whisper Local STT - Script d'installation v1.1.0              ║
 ║                      Bruno DELNOZ - 2025-10-31                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝${NC}
 
@@ -105,6 +113,11 @@ ${GREEN}OPTIONS DE CONFIGURATION:${NC}
         Langue par défaut de l'extension
         Défaut: ${DEFAULT_LANGUAGE}
         Valeurs: auto, fr, en, es, de, it, pt, nl, ar
+
+    ${YELLOW}--whisper-path CHEMIN${NC}
+        Chemin vers whisper.cpp (pour start-whisper.sh)
+        Défaut: ${DEFAULT_WHISPER_PATH}
+        Exemple: /home/user/whisper.cpp
 
 ${GREEN}OPTIONS STANDARDS:${NC}
     ${YELLOW}--help, -h${NC}
@@ -141,6 +154,9 @@ ${GREEN}EXEMPLES:${NC}
     ${CYAN}# Configuration complète${NC}
     $0 --exec --delay 15000 --silence 0.015 --auto-enter true --language fr
 
+    ${CYAN}# Avec chemin whisper personnalisé${NC}
+    $0 --exec --whisper-path /home/user/whisper.cpp
+
     ${CYAN}# Simulation (dry-run) pour voir ce qui sera fait${NC}
     $0 --simulate --exec --delay 5000 --language fr
 
@@ -170,8 +186,12 @@ EOF
 show_changelog() {
     cat << EOF
 ${CYAN}╔══════════════════════════════════════════════════════════════════════════╗
-║                            CHANGELOG v1.0.0                              ║
+║                            CHANGELOG v1.1.0                              ║
 ╚══════════════════════════════════════════════════════════════════════════╝${NC}
+
+${GREEN}Version 1.1.0 - 2025-10-31${NC}
+    ${YELLOW}[+]${NC} Ajout option --whisper-path pour spécifier le chemin de whisper.cpp
+    ${YELLOW}[+]${NC} Path par défaut gardé si non spécifié: ${DEFAULT_WHISPER_PATH}
 
 ${GREEN}Version 1.0.0 - 2025-10-31${NC}
     ${YELLOW}[+]${NC} Création du script d'installation
@@ -385,6 +405,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --language)
             DEFAULT_LANG="$2"
+            shift 2
+            ;;
+        --whisper-path)
+            WHISPER_PATH="$2"
             shift 2
             ;;
         *)

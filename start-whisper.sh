@@ -6,11 +6,26 @@
 # Email             : bruno.delnoz@protonmail.com
 # Path complet      : /mnt/data2_78g/Security/scripts/Projects_web/braveVTTextension/start-whisper.sh
 # Target usage      : Démarrage du serveur whisper.cpp pour l'extension STT
-# Version           : 2.0.0
-# Date              : 2025-10-31
+#                     avec configuration optimisée pour la rapidité
+# Version           : 2.3.0
+# Date              : 2025-11-01
 #
 # CHANGELOG:
 # ----------
+# v2.3.0 - 2025-11-01
+#   - Changement modèle par défaut : small au lieu de medium
+#   - Raison : medium trop lent (1.5GB), small plus rapide (487MB)
+#   - Qualité toujours excellente pour usage quotidien
+#   - Réduction temps de transcription de ~50%
+# 
+# v2.2.0 - 2025-10-31
+#   - Changement du modèle par défaut : medium au lieu de large-v3
+#   - Plus rapide et toujours bonne qualité
+# 
+# v2.1.0 - 2025-10-31
+#   - Ajout option --whisper-path pour spécifier le chemin de whisper.cpp
+#   - Path par défaut gardé si non spécifié
+# 
 # v2.0.0 - 2025-10-31
 #   - Ajout option --listmodel pour lister les modèles disponibles
 #   - Ajout option --model pour sélectionner un modèle spécifique
@@ -28,12 +43,13 @@
 # CONFIGURATION
 ################################################################################
 
-# Chemins
-WHISPER_DIR="/mnt/data2_78g/Security/scripts/AI_Projects/DeepEcho_whisper/whisper.cpp"
+# Chemins par défaut
+DEFAULT_WHISPER_DIR="/mnt/data2_78g/Security/scripts/AI_Projects/DeepEcho_whisper/whisper.cpp"
+WHISPER_DIR="$DEFAULT_WHISPER_DIR"
 MODELS_DIR="$WHISPER_DIR/models"
 
 # Configuration par défaut
-DEFAULT_MODEL="ggml-large-v3.bin"
+DEFAULT_MODEL="ggml-small.bin"
 MODEL="$DEFAULT_MODEL"
 PORT=8080
 HOST="127.0.0.1"
@@ -58,8 +74,8 @@ NC='\033[0m'
 show_help() {
     cat << EOF
 ${CYAN}╔══════════════════════════════════════════════════════════════════════════╗
-║              Whisper Server Launcher v2.0.0                              ║
-║                   Bruno DELNOZ - 2025-10-31                              ║
+║              Whisper Server Launcher v2.3.0                              ║
+║                   Bruno DELNOZ - 2025-11-01                              ║
 ╚══════════════════════════════════════════════════════════════════════════╝${NC}
 
 ${GREEN}DESCRIPTION:${NC}
@@ -80,6 +96,11 @@ ${GREEN}OPTIONS:${NC}
         Défaut: ${DEFAULT_MODEL}
         Exemples: ggml-base.bin, ggml-medium.bin, ggml-large-v3.bin
 
+    ${YELLOW}--whisper-path CHEMIN${NC}
+        Spécifier le chemin vers whisper.cpp
+        Défaut: ${DEFAULT_WHISPER_DIR}
+        Exemple: /home/user/whisper.cpp
+
     ${YELLOW}--listmodel${NC}
         Lister tous les modèles disponibles dans $MODELS_DIR
 
@@ -93,11 +114,14 @@ ${GREEN}EXEMPLES:${NC}
     ${CYAN}# Lister les modèles disponibles${NC}
     $0 --listmodel
 
-    ${CYAN}# Démarrer avec le modèle par défaut (large-v3)${NC}
+    ${CYAN}# Démarrer avec le modèle par défaut (small)${NC}
     $0 --exec
 
     ${CYAN}# Démarrer avec un modèle spécifique${NC}
     $0 --exec --model ggml-medium.bin
+
+    ${CYAN}# Démarrer avec un chemin whisper personnalisé${NC}
+    $0 --exec --whisper-path /home/user/whisper.cpp
 
     ${CYAN}# Tester la connexion${NC}
     $0 --test
@@ -105,9 +129,9 @@ ${GREEN}EXEMPLES:${NC}
 ${GREEN}MODÈLES WHISPER:${NC}
     tiny        (75 MB)    - Très rapide, moins précis
     base        (147 MB)   - Bon équilibre
-    small       (487 MB)   - Plus précis
-    medium      (1.5 GB)   - Haute qualité
-    large-v3    (3 GB)     - Meilleure qualité (recommandé)
+    small       (487 MB)   - Rapide et précis (recommandé par défaut)
+    medium      (1.5 GB)   - Haute qualité, plus lent
+    large-v3    (3 GB)     - Meilleure qualité, très lent
 
 ${GREEN}AUTEUR:${NC}
     Bruno DELNOZ - bruno.delnoz@protonmail.com
@@ -122,8 +146,22 @@ EOF
 show_changelog() {
     cat << EOF
 ${CYAN}╔══════════════════════════════════════════════════════════════════════════╗
-║                            CHANGELOG v2.0.0                              ║
+║                            CHANGELOG v2.3.0                              ║
 ╚══════════════════════════════════════════════════════════════════════════╝${NC}
+
+${GREEN}Version 2.3.0 - 2025-11-01${NC}
+    ${YELLOW}[*]${NC} Changement modèle par défaut : small au lieu de medium
+    ${YELLOW}[*]${NC} Raison : medium trop lent, small plus rapide (~50% gain)
+    ${YELLOW}[*]${NC} Qualité toujours excellente pour usage quotidien (487MB)
+    ${YELLOW}[*]${NC} Meilleur équilibre vitesse/qualité pour transcription temps réel
+
+${GREEN}Version 2.2.0 - 2025-10-31${NC}
+    ${YELLOW}[*]${NC} Changement du modèle par défaut : medium au lieu de large-v3
+    ${YELLOW}[*]${NC} Plus rapide (2-3x) et toujours excellente qualité
+
+${GREEN}Version 2.1.0 - 2025-10-31${NC}
+    ${YELLOW}[+]${NC} Ajout option --whisper-path pour spécifier le chemin de whisper.cpp
+    ${YELLOW}[+]${NC} Path par défaut gardé si non spécifié: ${DEFAULT_WHISPER_DIR}
 
 ${GREEN}Version 2.0.0 - 2025-10-31${NC}
     ${YELLOW}[+]${NC} Ajout option --listmodel pour lister les modèles
@@ -332,6 +370,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         --model)
             MODEL="$2"
+            shift 2
+            ;;
+        --whisper-path)
+            WHISPER_DIR="$2"
+            MODELS_DIR="$WHISPER_DIR/models"
             shift 2
             ;;
         --listmodel)

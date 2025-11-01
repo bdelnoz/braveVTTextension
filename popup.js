@@ -3,11 +3,18 @@
  * Nom du fichier : popup.js
  * Auteur         : Bruno DELNOZ
  * Email          : bruno.delnoz@protonmail.com
- * Version        : 2.1.0
- * Date           : 2025-10-31
+ * Version        : 2.2.0
+ * Date           : 2025-11-01
  * 
  * CHANGELOG:
  * -----------
+ * v2.2.0 - 2025-11-01
+ *   - ✅ CORRECTION: Variables DOM maintenant initialisées APRÈS DOMContentLoaded
+ *   - ✅ CORRECTION: Sauvegarde de langue fonctionne maintenant correctement
+ *   - ✅ Ajout feedback visuel "Langue sauvegardée !"
+ *   - ✅ Amélioration gestion d'erreurs chrome.storage
+ *   - ✅ Logs détaillés pour debug
+ * 
  * v2.1.0 - 2025-10-31
  *   - Ajout sauvegarde de la langue sélectionnée (chrome.storage.local)
  *   - Restauration automatique de la langue au démarrage
@@ -35,11 +42,12 @@ let streamSource = null;
 let silenceCheckInterval = null;
 let lastSoundTime = Date.now();
 
-const statusDiv = document.getElementById('status');
-const testBtn = document.getElementById('testBtn');
-const recordBtn = document.getElementById('recordBtn');
-const languageSelect = document.getElementById('language');
-const recordingIndicator = document.getElementById('recordingIndicator');
+// Variables DOM - seront initialisées après le chargement du DOM
+let statusDiv = null;
+let testBtn = null;
+let recordBtn = null;
+let languageSelect = null;
+let recordingIndicator = null;
 
 // ============================================================================
 // SAUVEGARDE ET RESTAURATION DES PRÉFÉRENCES
@@ -49,9 +57,20 @@ const recordingIndicator = document.getElementById('recordingIndicator');
  * Sauvegarde la langue sélectionnée dans chrome.storage.local
  */
 function saveLanguagePreference() {
+    if (!languageSelect) {
+        console.error('[Whisper STT] languageSelect est null !');
+        return;
+    }
+    
     const selectedLanguage = languageSelect.value;
+    console.log('[Whisper STT] Tentative de sauvegarde langue:', selectedLanguage);
+    
     chrome.storage.local.set({ selectedLanguage: selectedLanguage }, () => {
-        console.log('[Whisper STT] Langue sauvegardée:', selectedLanguage);
+        if (chrome.runtime.lastError) {
+            console.error('[Whisper STT] Erreur sauvegarde:', chrome.runtime.lastError);
+        } else {
+            console.log('[Whisper STT] ✅ Langue sauvegardée avec succès:', selectedLanguage);
+        }
     });
 }
 
@@ -59,12 +78,42 @@ function saveLanguagePreference() {
  * Restaure la langue sauvegardée au démarrage
  */
 function restoreLanguagePreference() {
+    if (!languageSelect) {
+        console.error('[Whisper STT] languageSelect est null lors de la restauration !');
+        return;
+    }
+    
+    console.log('[Whisper STT] Tentative de restauration de la langue...');
+    
     chrome.storage.local.get(['selectedLanguage'], (result) => {
+        if (chrome.runtime.lastError) {
+            console.error('[Whisper STT] Erreur restauration:', chrome.runtime.lastError);
+            return;
+        }
+        
         if (result.selectedLanguage) {
             languageSelect.value = result.selectedLanguage;
-            console.log('[Whisper STT] Langue restaurée:', result.selectedLanguage);
+            console.log('[Whisper STT] ✅ Langue restaurée:', result.selectedLanguage);
+        } else {
+            console.log('[Whisper STT] Aucune langue sauvegardée, utilisation de "auto"');
         }
     });
+}
+
+/**
+ * Affiche un feedback visuel quand la langue est sauvegardée
+ */
+function showLanguageSaved() {
+    const originalText = statusDiv.textContent;
+    const originalClass = statusDiv.className;
+    
+    statusDiv.textContent = '✅ Langue sauvegardée !';
+    statusDiv.className = 'status connected';
+    
+    setTimeout(() => {
+        statusDiv.textContent = originalText;
+        statusDiv.className = originalClass;
+    }, 2000);
 }
 
 // ============================================================================
@@ -72,7 +121,17 @@ function restoreLanguagePreference() {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('[Whisper STT v2.1.0] Extension chargée');
+    console.log('[Whisper STT v2.2.0] Extension chargée');
+    
+    // ✅ IMPORTANT: Initialiser les variables DOM ICI (après le chargement)
+    statusDiv = document.getElementById('status');
+    testBtn = document.getElementById('testBtn');
+    recordBtn = document.getElementById('recordBtn');
+    languageSelect = document.getElementById('language');
+    recordingIndicator = document.getElementById('recordingIndicator');
+    
+    console.log('[Whisper STT] Variables DOM initialisées');
+    console.log('[Whisper STT] languageSelect:', languageSelect);
     
     // Restaurer la langue sauvegardée
     restoreLanguagePreference();
@@ -85,7 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
     recordBtn.addEventListener('click', toggleRecording);
     
     // Sauvegarder la langue quand elle change
-    languageSelect.addEventListener('change', saveLanguagePreference);
+    languageSelect.addEventListener('change', () => {
+        saveLanguagePreference();
+        // Feedback visuel
+        showLanguageSaved();
+    });
+    
+    console.log('[Whisper STT] Event listeners attachés');
 });
 
 // ============================================================================

@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Whisper Local STT - Brave",
-  "version": "1.0",
-  "description": "Transcription vocale 100% locale avec whisper.cpp - Aucune donnée envoyée en ligne",
+  "version": "2.2.0",
+  "description": "Transcription vocale 100% locale avec whisper.cpp - Sauvegarde de la langue - Aucune donnée envoyée en ligne",
   
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   
   "host_permissions": [
