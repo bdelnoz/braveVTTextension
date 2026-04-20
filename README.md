@@ -1,4 +1,12 @@
 <!--
+Document : README.md
+Auteur : Bruno DELNOZ
+Email : bruno.delnoz@protonmail.com
+Version : v2.0.1
+Date : 2026-04-20 00:00
+-->
+
+<!--
 ============================================================================
 Nom du fichier : README.md
 Auteur         : Bruno DELNOZ
@@ -30,6 +38,29 @@ v1.0.0 - 2025-10-31
 Extension Brave pour la transcription vocale 100% locale utilisant whisper.cpp. Aucune donnée n'est envoyée sur internet, tout reste sur votre machine.
 
 **Version 2.0.0** - Interface vocale complète avec auto-stop intelligent et envoi automatique !
+
+---
+
+
+## Documentation synchronization update (2026-04-20)
+
+This section reflects the **current repository state** without changing scripts or runtime features.
+
+### Current component versions detected in the repository
+- `manifest.json`: **2.2.0**
+- `popup.js`: **2.2.0**
+- `content.js`: **2.1.0**
+- `start-whisper.sh`: **2.3.0** (default model: `ggml-small.bin`)
+- `install.sh`: **1.1.0**
+
+### Current script capabilities
+- `start-whisper.sh` supports: `--help`, `--exec`, `--model`, `--whisper-path`, `--listmodel`, `--test`, `--changelog`.
+- `install.sh` supports: `--help`, `--exec`, `--delay`, `--silence`, `--auto-enter`, `--language`, `--whisper-path`, `--prerequis`, `--install`, `--simulate`, `--changelog`.
+
+### Practical notes
+- In this repository state, `install.sh` is not executable; use `bash ./install.sh ...`.
+- The Whisper server launcher default model is currently **small** (`ggml-small.bin`), not `large-v3`.
+- Extension language preference persistence is implemented through `chrome.storage.local`.
 
 ---
 
