@@ -16,6 +16,18 @@ Historique complet de toutes les versions de l'extension.
 
 ---
 
+
+## Version 2.0.1 - 2026-04-20 00:00
+
+Author: Bruno DELNOZ (bruno.delnoz@protonmail.com)
+
+### Documentation synchronization only (no script/feature change)
+- Updated `README.md` to reflect effective repository versions and active script options.
+- Updated `INSTALL.md` to align commands and defaults with current launcher/installer behavior.
+- Added `WHY.md` to document project intent, scope, and architecture rationale.
+- Kept script files and runtime functionality unchanged.
+
+---
 ## Version 2.0.0 - 2025-10-31
 
 ### 🎯 Fonctionnalités majeures

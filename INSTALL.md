@@ -1,4 +1,12 @@
 <!--
+Document : INSTALL.md
+Auteur : Bruno DELNOZ
+Email : bruno.delnoz@protonmail.com
+Version : v2.0.1
+Date : 2026-04-20 00:00
+-->
+
+<!--
 ============================================================================
 Nom du fichier : INSTALL.md
 Auteur         : Bruno DELNOZ
@@ -27,6 +35,35 @@ v1.0.0 - 2025-10-31
 # 📦 Installation - Whisper Local STT pour Brave v2.0.0
 
 Guide d'installation complet pour l'extension de transcription vocale 100% locale avec **auto-stop intelligent** et **ENTER automatique**.
+
+---
+
+
+## Documentation synchronization update (2026-04-20)
+
+This installation guide has been synchronized with the scripts currently present in the repository.
+
+### Effective versions and defaults
+- `start-whisper.sh` version: **2.3.0**
+- `install.sh` version: **1.1.0**
+- Extension manifest version: **2.2.0**
+- Default Whisper model in launcher: **`ggml-small.bin`**
+
+### Command usage aligned with current files
+```bash
+# Launcher help
+./start-whisper.sh --help
+
+# Start Whisper with default settings
+./start-whisper.sh --exec
+
+# Install/configure extension files (script currently not executable in repo)
+bash ./install.sh --exec
+```
+
+### Additional current options
+- `start-whisper.sh`: `--listmodel`, `--test`, `--model`, `--whisper-path`, `--changelog`
+- `install.sh`: `--delay`, `--silence`, `--auto-enter`, `--language`, `--whisper-path`, `--simulate`, `--prerequis`, `--install`, `--changelog`
 
 ---
 
